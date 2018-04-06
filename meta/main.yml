@@ -1,0 +1,9 @@
+galaxy_info:
+  author: DevOps Teams
+  description: Ansible role to manage AWS ECS cluster
+  company: Linx+Neemu+Chaordic
+  license: GPLv3
+
+  min_ansible_version: 2.3
+  galaxy_tags: []
+dependencies: []

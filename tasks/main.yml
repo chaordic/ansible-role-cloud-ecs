@@ -1,0 +1,7 @@
+---
+
+- name: ECS | Setting up cluster
+  include: cluster.yml
+  with_items: "{{ ecs_clusters }}"
+  loop_control:
+    loop_var: item_c
