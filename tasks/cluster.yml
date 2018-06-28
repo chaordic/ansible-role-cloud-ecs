@@ -6,6 +6,13 @@
 - set_fact:
     cluster_userdata: "{{ lookup('template', 'lcg_userdata.j2') }}"
 
+- set_fact:
+    instance_name_tag:
+        - Name: "{{ item_c.name }}-ecs-instance"
+
+- set_fact:
+    instance_tags: "{{ instance_name_tag }} + {{ item_c.tags | default([]) }}"
+
 - name: ECS | Create Launch Config
   ec2_lc:
     name: "{{ item_c.name }}-lc"
@@ -28,8 +35,7 @@
     region: "{{ item_c.region }}"
     availability_zones: "{{ item_c.zones }}"
     vpc_zone_identifier: "{{ item_c.subnets }}"
-    tags:
-      - Name: "{{ item_c.name }}-ecs-instance"
+    tags: "{{ instance_tags }}"
 
 - name: Create ECS Cluster
   ecs_cluster:
