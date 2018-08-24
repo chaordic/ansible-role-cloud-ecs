@@ -15,12 +15,12 @@
 
 - name: ECS | Create Launch Config
   ec2_lc:
-    name: "{{ item_c.name }}-lc"
+    name: "{{ item_c.name }}-{{ ansible_date_time.epoch }}"
     state: present
     instance_type: "{{ item_c.instance_type }}"
     image_id: "{{ item_c.ami_id }}"
-    key_name: "{{ item_c.key_name |d(omit) }}"
-    region: "{{ item_c.region |d(omit) }}"
+    key_name: "{{ item_c.key_name | d(omit) }}"
+    region: "{{ item_c.region | d(omit) }}"
     security_groups: "{{ item_c.security_groups }}"
     vpc_id: "{{ item_c.vpc_id | default(omit) }}"
     instance_profile_name: "{{ item_c.instance_profile_name |d(omit) }}"
@@ -29,9 +29,10 @@
 - name: Create Auto Scaling Group
   ec2_asg:
     name: "{{ item_c.name }}-asg"
-    launch_config_name: "{{ item_c.name }}-lc"
+    launch_config_name: "{{ item_c.name }}-{{ ansible_date_time.epoch }}"
     min_size: "{{ item_c.asg_min_size }}"
     max_size: "{{ item_c.asg_max_size }}"
+    desired_capacity: "{{ item_c.asg_desired_size }}"
     region: "{{ item_c.region }}"
     availability_zones: "{{ item_c.zones }}"
     vpc_zone_identifier: "{{ item_c.subnets }}"
