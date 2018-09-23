@@ -75,4 +75,4 @@ GPLv3
 Author Information
 ------------------
 
-DevOps Team at [Linx Impulse](https://github.com/chaordic)
+Cloud Infrastructure Team, Linx Impulse
