@@ -48,22 +48,24 @@
   ecs_service: "{{ item }}"
   with_items: "{{ item_c.services }}"
 
-- set_fact:
-    new_scheduled_tasks_str: "
-      {% set tasks = [] %}
-      {% for item in item_c.scheduled_tasks %}
-        {% set targets = [] %}
-        {% for target in item.targets %}
-          {{ targets.append(target | combine({ 'arn': ecs_cluster_info.cluster.clusterArn })) }}
+- block:
+  - set_fact:
+      new_scheduled_tasks_str: "
+        {% set tasks = [] %}
+        {% for item in item_c.scheduled_tasks %}
+          {% set targets = [] %}
+          {% for target in item.targets %}
+            {{ targets.append(target | combine({ 'arn': ecs_cluster_info.cluster.clusterArn })) }}
+          {% endfor %}
+          {{ tasks.append(item | combine({ 'targets': targets })) }}
         {% endfor %}
-        {{ tasks.append(item | combine({ 'targets': targets })) }}
-      {% endfor %}
-      {{ tasks | to_json }}
-      "
+        {{ tasks | to_json }}
+        "
 
-- set_fact:
-    new_scheduled_tasks: "{{ new_scheduled_tasks_str | from_json }}"
+  - set_fact:
+      new_scheduled_tasks: "{{ new_scheduled_tasks_str | from_json }}"
 
-- name: Create Event Rules
-  cloudwatchevent_rule: "{{ item }}"
-  with_items: "{{ new_scheduled_tasks }}"
+  - name: Create Event Rules
+    cloudwatchevent_rule: "{{ item }}"
+    with_items: "{{ new_scheduled_tasks }}"
+  when: scheduled_tasks is defined
