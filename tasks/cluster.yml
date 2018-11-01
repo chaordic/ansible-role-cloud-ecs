@@ -68,4 +68,4 @@
   - name: Create Event Rules
     cloudwatchevent_rule: "{{ item }}"
     with_items: "{{ new_scheduled_tasks }}"
-  when: scheduled_tasks is defined
+  when: item_c.scheduled_tasks is defined
