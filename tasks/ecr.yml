@@ -1,0 +1,7 @@
+---
+- name: ECR | create repository
+  ecs_ecr:
+    name: "{{ item.name }}"
+    region: "{{ item.region }}"
+    state: present
+  with_items: "{{ ecr_repositories }}"

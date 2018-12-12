@@ -28,6 +28,10 @@ ecs_clusters:                                     # the list of ECS cluster conf
       - us-east-1a
     subnets:                                      # List of subnets
       - subnet-abcd1234
+
+ecr_repositories:
+  - name: "chaordic/platform"
+    region: "us-east-1"
 ```
 
 Dependencies

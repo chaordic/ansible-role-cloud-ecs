@@ -5,3 +5,6 @@
   with_items: "{{ ecs_clusters }}"
   loop_control:
     loop_var: item_c
+
+- name: ECS | Setting up ECR
+  include: ecr.yml

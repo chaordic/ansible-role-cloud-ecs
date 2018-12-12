@@ -1,2 +1,4 @@
 ---
 ecs_clusters: []
+
+ecr_repositories: []
