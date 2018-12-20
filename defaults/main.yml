@@ -2,3 +2,5 @@
 ecs_clusters: []
 
 ecr_repositories: []
+
+ecs_taskdefinitions: []

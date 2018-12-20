@@ -1,0 +1,4 @@
+---
+- name: create task definition
+  ecs_taskdefinition: "{{ item }}"
+  with_items: "{{ ecs_taskdefinitions }}"

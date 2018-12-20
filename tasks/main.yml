@@ -1,5 +1,8 @@
 ---
 
+- name: ECS | Setting up task definitions
+  include: task_definition.yml
+
 - name: ECS | Setting up cluster
   include: cluster.yml
   with_items: "{{ ecs_clusters }}"

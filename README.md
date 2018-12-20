@@ -28,11 +28,34 @@ ecs_clusters:                                     # the list of ECS cluster conf
       - us-east-1a
     subnets:                                      # List of subnets
       - subnet-abcd1234
+    cluster_type: ec2                             # Cluster type: ec2 (defaut value) or fargate
 
 ecr_repositories:
   - name: "chaordic/platform"
     region: "us-east-1"
+
+# To create a fargate cluster you must define the properties below:
+ecs_clusters:
+  - name: "ecs-fargate"
+    cluster_type: fargate
 ```
+
+```yml
+ecs_taskdefinitions:
+  - family: nginx
+    containers:
+    - name: nginx
+      essential: true
+      image: "nginx"
+      portMappings:
+      - containerPort: 8080
+        hostPort: 8080
+      cpu: 512
+      memory: 1GB
+    state: present
+```
+For all task definitions properties please look at the module [documentation](https://docs.ansible.com/ansible/latest/modules/ecs_taskdefinition_module.html)
+
 
 Dependencies
 ------------
@@ -67,6 +90,7 @@ Including an example of how to use your role (for instance, with variables passe
               - us-east-1a
             subnets:
               - subnet-abcd1234
+            cluster_type: ec2
 
       roles:
         - role: cloud-ecs

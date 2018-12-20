@@ -3,40 +3,43 @@
 
 - debug: var=item_c
 
-- set_fact:
-    cluster_userdata: "{{ lookup('template', 'lcg_userdata.j2') }}"
+- block:
+  - set_fact:
+      cluster_userdata: "{{ lookup('template', 'lcg_userdata.j2') }}"
 
-- set_fact:
-    instance_name_tag:
+  - set_fact:
+      instance_name_tag:
         - Name: "{{ item_c.name }}-ecs-instance"
 
-- set_fact:
-    instance_tags: "{{ instance_name_tag }} + {{ item_c.tags | default([]) }}"
+  - set_fact:
+      instance_tags: "{{ instance_name_tag }} + {{ item_c.tags | default([]) }}"
 
-- name: ECS | Create Launch Config
-  ec2_lc:
-    name: "{{ item_c.name }}-{{ ansible_date_time.epoch }}"
-    state: present
-    instance_type: "{{ item_c.instance_type }}"
-    image_id: "{{ item_c.ami_id }}"
-    key_name: "{{ item_c.key_name | d(omit) }}"
-    region: "{{ item_c.region | d(omit) }}"
-    security_groups: "{{ item_c.security_groups }}"
-    vpc_id: "{{ item_c.vpc_id | default(omit) }}"
-    instance_profile_name: "{{ item_c.instance_profile_name |d(omit) }}"
-    user_data: "{{ cluster_userdata }}"
+  - name: ECS | Create Launch Config
+    ec2_lc:
+      name: "{{ item_c.name }}-{{ ansible_date_time.epoch }}"
+      state: present
+      instance_type: "{{ item_c.instance_type }}"
+      image_id: "{{ item_c.ami_id }}"
+      key_name: "{{ item_c.key_name | d(omit) }}"
+      region: "{{ item_c.region | d(omit) }}"
+      security_groups: "{{ item_c.security_groups }}"
+      vpc_id: "{{ item_c.vpc_id | default(omit) }}"
+      instance_profile_name: "{{ item_c.instance_profile_name |d(omit) }}"
+      user_data: "{{ cluster_userdata }}"
 
-- name: Create Auto Scaling Group
-  ec2_asg:
-    name: "{{ item_c.name }}-asg"
-    launch_config_name: "{{ item_c.name }}-{{ ansible_date_time.epoch }}"
-    min_size: "{{ item_c.asg_min_size }}"
-    max_size: "{{ item_c.asg_max_size }}"
-    desired_capacity: "{{ item_c.asg_desired_size }}"
-    region: "{{ item_c.region }}"
-    availability_zones: "{{ item_c.zones }}"
-    vpc_zone_identifier: "{{ item_c.subnets }}"
-    tags: "{{ instance_tags }}"
+  - name: Create Auto Scaling Group
+    ec2_asg:
+      name: "{{ item_c.name }}-asg"
+      launch_config_name: "{{ item_c.name }}-{{ ansible_date_time.epoch }}"
+      min_size: "{{ item_c.asg_min_size }}"
+      max_size: "{{ item_c.asg_max_size }}"
+      desired_capacity: "{{ item_c.asg_desired_size }}"
+      region: "{{ item_c.region }}"
+      availability_zones: "{{ item_c.zones }}"
+      vpc_zone_identifier: "{{ item_c.subnets }}"
+      tags: "{{ instance_tags }}"
+
+  when: item_c.cluster_type is not defined or item_c.cluster_type == "ec2"
 
 - name: Create ECS Cluster
   ecs_cluster:
